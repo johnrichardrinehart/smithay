@@ -67,6 +67,24 @@ pub enum Event {
     PauseSession,
     /// The whole session has been activated
     ActivateSession,
+    /// The system is preparing to go to sleep (suspend or hibernate)
+    ///
+    /// This event is generated from the logind `PrepareForSleep` D-Bus signal
+    /// when the system is about to suspend or hibernate. Compositors may want
+    /// to prepare for sleep by saving state or releasing resources.
+    ///
+    /// Note: This event is only generated when using the logind session notifier
+    /// (feature `backend_session_logind`).
+    PreparingSleep,
+    /// The system has resumed from sleep (suspend or hibernate)
+    ///
+    /// This event is generated from the logind `PrepareForSleep` D-Bus signal
+    /// when the system has woken up from suspend or hibernate. Compositors should
+    /// refresh their DRM state as connectors may have changed during sleep.
+    ///
+    /// Note: This event is only generated when using the logind session notifier
+    /// (feature `backend_session_logind`).
+    ResumedFromSleep,
 }
 
 impl Session for () {
@@ -153,3 +171,6 @@ impl AsErrno for () {
 
 #[cfg(feature = "backend_session_libseat")]
 pub mod libseat;
+
+#[cfg(feature = "backend_session_logind")]
+pub mod logind;
