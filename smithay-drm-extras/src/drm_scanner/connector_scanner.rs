@@ -40,9 +40,11 @@ impl ConnectorScanner {
         let mut added = Vec::new();
         let mut removed = Vec::new();
 
-        for conn in connector_handles
-            .iter()
-            .filter_map(|conn| drm.get_connector(*conn, true).ok())
+        for conn in connector_handles.iter().filter_map(|conn| {
+            drm.get_connector(*conn, true)
+                .or_else(|_| drm.get_connector(*conn, false))
+                .ok()
+        })
         {
             let curr_state = conn.state();
 
